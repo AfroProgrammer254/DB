@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/new/Images">
+        <file>member1.ico</file>
+        <file>member1.png</file>
+        <file>settings.ico</file>
+        <file>about.ico</file>
+        <file>loans.ico</file>
+        <file>member_details.ico</file>
+        <file>account.ico</file>
+        <file>member2.png</file>
+    </qresource>
+</RCC>
