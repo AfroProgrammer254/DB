@@ -7,6 +7,7 @@ Loans::Loans(QWidget *parent) :
     ui(new Ui::Loans)
 {
     ui->setupUi(this);
+    //Validation of the Member ID field
     QIntValidator *decValidator=new QIntValidator(0,1000,this);
     ui->lineEdit_MemID->setValidator(decValidator);
 }

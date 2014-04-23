@@ -60,6 +60,13 @@ void Settings::on_pushButton_SetLimits_clicked()
     amt4=ui->lineEdit_Amt4->text();
     amt5=ui->lineEdit_Amt5->text();
     amt6=ui->lineEdit_Amt6->text();
+    //make sure all values have been entered
+    if(Limit1a.length()<1 && Limit1b.length()<1 && Limit2a.length()<1 &&Limit2b.length()<1 && Limit3a.length()<1 && Limit3b.length()<1 && Limit4a.length()<1 && Limit4b.length()<1 &&Limit5a.length()<1 && Limit5b.length()<1 &&Limit6.length()<1)
+    {
+        if(amt1.length()<1 && amt2.length()<1 && amt3.length()<1 && amt4.length()<1 && amt5.length()<1 && amt6.length()<1)
+        QMessageBox::information(this,tr("Settings"),tr("Make sure all fields are filled..."));
+        return;
+    }
     //insert the values into the database
     QSqlQuery qry1,qry2,qry3,qry4,qry5,qry6;
     qry1.prepare("update loan_limits set a='"+Limit1a+"',b='"+Limit1b+"',amount='"+amt1+"' where Limits='"+Limit1+"'");

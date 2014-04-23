@@ -24,6 +24,7 @@ Login::Login(QWidget *parent) :
         ui->statusBar->showMessage("Not Connected...");
 
     }
+    //Validate all integer inputs
      QIntValidator *decValidator=new QIntValidator(0,100000,ui->lineEdit_Amt);
      QIntValidator *decValidator2=new QIntValidator(0,100,ui->lineEdit_NumberOfDeposits);
      QIntValidator *decValidator3=new QIntValidator(0,100,ui->lineEdit_Rate);
@@ -46,19 +47,20 @@ bool Login::connOpen()
     db= QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(QCoreApplication::applicationDirPath()+"/Deenze");
 
-    if(db.open())
+    if(db.open())//Open database
     {
-       qDebug()<<("Connected...");
+
        return true;
     }
     else
     {
-        qDebug()<<("Not Connected...");
+
         return false;
     }
 }
 void Login::connClose()
 {
+    //close the database
     db.close();
     db.removeDatabase(QSqlDatabase::defaultConnection);
 }
@@ -104,70 +106,89 @@ void Login::on_commandLinkButton_Save_clicked()
     //save rate
     QString rate;
     rate=ui->lineEdit_Rate->text();
-    QSqlQuery qry;
-    qry.prepare("update group_details set interestRate='"+rate+"'");
-    if(qry.exec())
+    if(rate.length()>0)
     {
-       //sets the interest rate
+        QSqlQuery qry;
+        qry.prepare("update group_details set interestRate='"+rate+"'");
+        if(qry.exec())
+        {
+           //sets the interest rate
 
+
+        }
+        else
+        {
+            QMessageBox::information(this,tr("Error"),qry.lastError().text());
+            qDebug()<<qry.lastQuery();
+        }
     }
-    else
-    {
-        QMessageBox::information(this,tr("Error"),qry.lastError().text());
-        qDebug()<<qry.lastQuery();
-    }
+
+
 
     //save time
     QString time;
     time=ui->lineEdit_Time->text();
-    QSqlQuery qry1;
-    qry1.prepare("update group_details set time='"+time+"'");
-    if(qry1.exec())
+    if(time.length()>0)
     {
-       //loan time period saved
+        QSqlQuery qry1;
+        qry1.prepare("update group_details set time='"+time+"'");
+        if(qry1.exec())
+        {
+           //loan time period saved
 
+        }
+        else
+        {
+            QMessageBox::information(this,tr("Error"),qry1.lastError().text());
+            qDebug()<<qry1.lastQuery();
+        }
     }
-    else
-    {
-        QMessageBox::information(this,tr("Error"),qry1.lastError().text());
-        qDebug()<<qry1.lastQuery();
-    }
+
 
     //save minimum number of deposits
     QString minDeposits;
     minDeposits=ui->lineEdit_NumberOfDeposits->text();
-    QSqlQuery qry2;
-    qry2.prepare("update group_details set minNumOfDeposits='"+minDeposits+"'");
-    if(qry2.exec())
+    if(minDeposits.length()>0)
     {
-        //sets minimum number of deposits required
+        QSqlQuery qry2;
+        qry2.prepare("update group_details set minNumOfDeposits='"+minDeposits+"'");
+        if(qry2.exec())
+        {
+            //sets minimum number of deposits required
 
+        }
+        else
+        {
+            QMessageBox::information(this,tr("Error"),qry2.lastError().text());
+            qDebug()<<qry2.lastQuery();
+        }
     }
-    else
-    {
-        QMessageBox::information(this,tr("Error"),qry2.lastError().text());
-        qDebug()<<qry2.lastQuery();
-    }
+
 
     //save minimum amount
     QString minAmt;
     minAmt=ui->lineEdit_Amt->text();
-    QSqlQuery qry3;
-    qry3.prepare("update group_details set minimumAmount='"+minAmt+"'");
-    if(qry3.exec())
+    if(minAmt.length()>0)
     {
-       //sets minimum amount
+        QSqlQuery qry3;
+        qry3.prepare("update group_details set minimumAmount='"+minAmt+"'");
+        if(qry3.exec())
+        {
+           //sets minimum amount
+        }
+        else
+        {
+            QMessageBox::information(this,tr("Error"),qry3.lastError().text());
+            qDebug()<<qry3.lastQuery();
+        }
     }
-    else
-    {
-        QMessageBox::information(this,tr("Error"),qry3.lastError().text());
-        qDebug()<<qry3.lastQuery();
-    }
+
     QMessageBox::information(this,tr("Deenze"),tr("Settings Saved..."));
 }
 
 void Login::on_commandLinkButton_Employees_clicked()
 {
+    //Open Employees form
     Employees employee;
     employee.setModal(false);
     employee.exec();

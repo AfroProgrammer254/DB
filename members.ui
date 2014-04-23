@@ -10,6 +10,12 @@
     <height>610</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>488</width>
+    <height>610</height>
+   </size>
+  </property>
   <property name="maximumSize">
    <size>
     <width>488</width>
@@ -187,19 +193,6 @@ color:red;</string>
    </property>
    <property name="text">
     <string>no</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton">
-   <property name="geometry">
-    <rect>
-     <x>330</x>
-     <y>520</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Print</string>
    </property>
   </widget>
  </widget>

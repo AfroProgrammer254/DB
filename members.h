@@ -21,7 +21,7 @@ public:
 private slots:
     void on_commandLinkButton_Back_clicked();
 
-    void on_pushButton_clicked();
+
 
 private:
     Ui::Members *ui;

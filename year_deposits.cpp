@@ -1,7 +1,6 @@
 #include "year_deposits.h"
 #include "ui_year_deposits.h"
 #include"login.h"
-#include<QDate>
 #include<QMessageBox>
 
 

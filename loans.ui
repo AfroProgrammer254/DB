@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>481</width>
+    <width>479</width>
     <height>661</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>479</width>
+    <height>661</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>479</width>
+    <height>661</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Loan Records</string>

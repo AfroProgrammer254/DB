@@ -2,6 +2,7 @@
 #include"login.h"
 #include "ui_members.h"
 #include<QPainter>
+#include<QtPrintSupport/QPrinter>
 
 
 Members::Members(QWidget *parent) :
@@ -46,7 +47,3 @@ void Members::on_commandLinkButton_Back_clicked()
     this->hide();
 }
 
-void Members::on_pushButton_clicked()
-{
-
-}

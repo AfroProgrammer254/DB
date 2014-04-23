@@ -10,7 +10,7 @@ Login_Form::Login_Form(QWidget *parent) :
     ui(new Ui::Login_Form)
 {
     ui->setupUi(this);
-    load();
+    load();//load Employee Usernames from the database into the combobox
 }
 
 Login_Form::~Login_Form()
@@ -20,6 +20,7 @@ Login_Form::~Login_Form()
 
 void Login_Form::load()
 {
+
     QSqlQuery load;
     QSqlQueryModel *modal=new QSqlQueryModel();
     load.prepare("select username from employees");

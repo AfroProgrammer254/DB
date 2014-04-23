@@ -27,7 +27,7 @@ Panel::Panel(QWidget *parent) :
     ui->lineEdit_MemIDLoan->setValidator(decValidator3);
     QString style="QLabel{background-color:white;}";
     ui->pushButton_ProcessLoan->setStyleSheet(style);
-    this->setContextMenuPolicy(Qt::CustomContextMenu);
+    this->setContextMenuPolicy(Qt::CustomContextMenu);//create a context menu
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)),this,SLOT(showContextMenu(const QPoint&)));
 
 }
@@ -83,7 +83,7 @@ void Panel::update(int dep)
     qry2.prepare("update group_details set total_funds='"+total+"'");
     if(qry2.exec())
     {
-        qDebug()<<"deposited..."<<total;
+       //deposited
 
     }
     else
@@ -160,8 +160,7 @@ int Panel::setLoanLimits(QString id)
         amt6=qry6.value(1).toInt();
         }
     }
-
-    qDebug()<<amt1<<amt2<<amt3<<amt4<<amt5<<amt6;
+    //check member's deposit history to determine limit imposed
     QSqlQuery dep;
     dep.prepare("select depositAmount from deposits where memberID='"+memid+"'");
     if(dep.exec())
@@ -201,49 +200,49 @@ int Panel::setLoanLimits(QString id)
         qDebug()<<dep.lastQuery();
     }
 
-    qDebug()<<lim1<<lim2<<lim3<<lim4<<lim5<<lim6;
+   //if user falls in the first limit category
 
     if(lim1>lim2 && lim1> lim3 && lim1> lim4 && lim1> lim5 && lim1>lim6)
     {
 
         limAmt=amt1;
-        qDebug()<<"limAmt:"<<limAmt;
         return limAmt;
     }
+    //if user falls in the second limit category
     if(lim2>lim1 && lim2>lim3 && lim2>lim4 && lim2>lim5 && lim2>lim6)
     {
         limAmt=amt2;
-        qDebug()<<"limAmt:"<<limAmt;
         return limAmt;
     }
+    //if user falls in the 3rd limit category
     if(lim3>lim2 && lim3>lim1 && lim3>lim4 && lim3>lim5 && lim3>lim6)
     {
         limAmt=amt3;
-        qDebug()<<"limAmt:"<<limAmt;
         return limAmt;
     }
+    //if user falls in the 4th limit category
     if(lim4>lim2 && lim4>lim3 && lim4>lim1 && lim4>lim5 && lim4>lim6)
     {
         limAmt=amt4;
-        qDebug()<<"limAmt:"<<limAmt;
         return limAmt;
     }
+    //if user falls in the 5th limit category
     if(lim5>lim2 && lim5>lim3 && lim5>lim4 && lim5>lim1 && lim5>lim6)
     {
         limAmt=amt5;
-        qDebug()<<"limAmt:"<<limAmt;
         return limAmt;
     }
+    //if user falls in the 6th limit category
     if(lim6>lim2 && lim6>lim3 && lim6>lim4 && lim6>lim5 && lim6>lim1)
     {
         limAmt=amt6;
-        qDebug()<<"limAmt:"<<limAmt;
+
         return limAmt;
     }
     else
+        //user is in the average limit category
     {
         limAmt=amt3;
-        qDebug()<<"limAmt:"<<limAmt;
         return limAmt;
     }
 
@@ -253,9 +252,7 @@ void Panel::depositNoLoan()
 {
 
     QString amount,memID,memBal;
-    int bal=0;
-    int amt=0;
-    QVariant accBal;
+    QVariant accBal;//Qt variable which holds any data type
     bool ok;
     amount=ui->lineEdit_Deposit->text();
     memID=getMemID();//acquire member ID
@@ -268,15 +265,33 @@ void Panel::depositNoLoan()
     {
         ok=false;
         QMessageBox::critical(this,tr("Deposit"),tr("No amount entered..."));
+        return;
     }
     //Make sure MemberID has been entered
     if(memID=="")
     {
         ok=false;
         QMessageBox::critical(this,tr("Deposit"),tr("No Member ID entered..."));
+        return;
     }
+    //Validate Member
+    QSqlQuery validate;
+    validate.prepare("select * from member_details where memberID='"+memID+"'");
+    if(validate.exec())
+    {
+        int count=0;
+        while(validate.next())
+        {
+            count++;
+        }
+        if(count==0)
+        {
 
-    //Validate Minimum Deposit
+            QMessageBox::critical(this,tr("Deposit"),tr("No such member found,Check Member ID entered..."));
+            return;
+        }
+    }
+    //Validate Minimum Deposit Allowed
     if(ok==true)
     {
 
@@ -316,11 +331,13 @@ void Panel::depositNoLoan()
 
         while(qry1.next())
         {
-        bal=qry1.value(0).toInt();
-        amt=amount.toInt();
-        bal+=amt;
-        update(amt);//update the system
-         accBal=bal;
+            int bal=0;
+            int amt=0;
+            bal=qry1.value(0).toInt();
+            amt=amount.toInt();
+            bal+=amt;//increment member balance by the amount they've deposited
+            update(amt);//update the system
+            accBal=bal;
 
         }
     }
@@ -347,7 +364,7 @@ void Panel::depositNoLoan()
 
     }
 
-    ui->lineEdit_Deposit->setText("");
+    ui->lineEdit_Deposit->setText("");//clear the input values
 
 }
 void Panel::depositLoan()
@@ -371,7 +388,9 @@ void Panel::depositLoan()
     {
         ok=false;
         QMessageBox::critical(this,tr("Deposit"),tr("No amount entered..."));
+        return;
     }
+
     //Validate Minimum Deposit
     if(ok==true)
     {
@@ -416,7 +435,7 @@ void Panel::depositLoan()
             }
         }
         amt=amount.toInt();
-        if(amt>=(loan+interest))
+        if(amt>=(loan+interest))//if member has paid an amount more than he owes
         {
             qrybal.prepare("select accountBal from member_accounts where memberID='"+memID+"'");
             if(qrybal.exec())
@@ -424,11 +443,11 @@ void Panel::depositLoan()
                 while(qrybal.next())
                 {
                     currbal=qrybal.value(0).toInt();
-            bal=amt-(loan+interest);
-            currbal+=bal;
-            accBal=currbal;
-            memBal=accBal.value<QString>();
-            update(amt);//update system
+                    bal=amt-(loan+interest);
+                    currbal+=bal;
+                    accBal=currbal;
+                    memBal=accBal.value<QString>();
+                    update(amt);//update system
 
                 }
             }
@@ -460,7 +479,7 @@ void Panel::depositLoan()
                 qDebug()<<dep.lastError().text();
             }
         }
-        else
+        else//if amount member has deposited is still less than he owes
         {
             bal=(loan+interest)-amt;
             accBal=bal;
@@ -498,7 +517,7 @@ void Panel::depositLoan()
         }
     }
 
-    ui->lineEdit_PaymentAmt->setText("");
+    ui->lineEdit_PaymentAmt->setText("");//clears input values
 
 }
 void Panel::requestLoan()
@@ -514,6 +533,29 @@ void Panel::requestLoan()
     bool ok=false;
     //Acquire the member id
         memID=getMemIDLoan();
+        if(memID=="")
+        {
+            ok=false;
+            QMessageBox::critical(this,tr("Loan Request"),tr("No Member ID entered..."));
+            return;
+        }
+        //Validate Member
+        QSqlQuery validate;
+        validate.prepare("select * from member_details where memberID='"+memID+"'");
+        if(validate.exec())
+        {
+            int count=0;
+            while(validate.next())
+            {
+                count++;
+            }
+            if(count==0)
+            {
+                ok=false;
+                QMessageBox::critical(this,tr("Deposit"),tr("No such member found,Check Member ID entered..."));
+                return;
+            }
+        }
     //Check if amount has been entered
         if(loanAmt.length()>1)
         {
@@ -524,11 +566,7 @@ void Panel::requestLoan()
             ok=false;
             QMessageBox::critical(this,tr("Loan Request"),tr("No Amount entered..."));
         }
-        if(memID=="")
-        {
-            ok=false;
-            QMessageBox::critical(this,tr("Loan Request"),tr("No Member ID entered..."));
-        }
+
     //check if the SACCO has enough funds to issue the loan
     if(ok==true)
     {
@@ -542,7 +580,7 @@ void Panel::requestLoan()
                 total_funds=funds.value(0).toInt();
             }
         }
-        if(principal>=total_funds)
+        if(principal>=total_funds)//if member's loan request is more than the amount available
         {
             ok=false;
             QMessageBox::critical(this,tr("Loan Request"),tr("Loan Request Denied. Not enough funds to grant request.."));
@@ -579,10 +617,9 @@ void Panel::requestLoan()
     }
     else
     {
-        QMessageBox::critical(this,tr("Loan Request"),tr("No deposits found..."));
         qDebug()<<activity.lastError().text();
     }
-    if(num>=dep)
+    if(num>=dep)//if member has met the threshold for deposits required to take a loan
     {
         ok=true;
     }
@@ -594,7 +631,7 @@ void Panel::requestLoan()
     }
     if(ok==true)
     {
-    //Check Loan Limits
+    //Get loan limit for member
     loanLimit=setLoanLimits(memID);
     if(principal>loanLimit)
     {
@@ -645,9 +682,8 @@ void Panel::requestLoan()
         }
         //get the interest
         i=(principal*rate*time/12)/100;
-      interestAccrued=i;
-      interest=interestAccrued.value<QString>();
-
+        interestAccrued=i;
+        interest=interestAccrued.value<QString>();
         //Record the loan
         QSqlQuery qry4,qry5,qry6,records;
         qry4.prepare("insert into loans(memberID,loanAmountTaken,interestAccrued,dateOfLoan) values('"+memID+"','"+loanAmt+"','"+interest+"',date('now'))");
@@ -666,7 +702,6 @@ void Panel::requestLoan()
         else
         {
             QMessageBox::critical(this,tr("Loan Request"),qry4.lastError().text());
-            qDebug()<<qry4.lastQuery();
         }
         //Deduct the loan amount from the SACCO's total funds
         qry5.prepare("select total_funds from group_details");
@@ -692,12 +727,13 @@ void Panel::requestLoan()
         }
     }
     }
-    ui->lineEdit_LoanAmt->setText("");
-     ui->checkBox->toggle();
+    ui->lineEdit_LoanAmt->setText("");//clear inputs
+     ui->checkBox->toggle();//toggle checkbox
 }
 
 void Panel::on_pushButton_Deposit_clicked()
 {
+
           depositNoLoan();//call deposit function
 
 }
@@ -706,6 +742,7 @@ void Panel::on_checkBox_toggled(bool checked)
 {
     if(checked==true)
     {
+        //if checkbox is toggled,the button will have the following style
         QString style="QPushButton{background-color:black; color:red;}";
         ui->pushButton_ProcessLoan->setEnabled(true);
         ui->pushButton_ProcessLoan->setStyleSheet(style);
@@ -728,12 +765,30 @@ void Panel::on_pushButton_ProcessLoan_clicked()
 void Panel::on_pushButton_YearDeposits_clicked()
 {
     QString memID;
-    memID=getMemID();
+    memID=getMemID();//get member ID
     if(memID=="")
     {
         QMessageBox::information(this,tr("Year Deposits"),("No Member ID entered..."));
         return;
     }
+    //Validate Member
+    QSqlQuery validate;
+    validate.prepare("select * from member_details where memberID='"+memID+"'");
+    if(validate.exec())
+    {
+        int count=0;
+        while(validate.next())
+        {
+            count++;
+        }
+        if(count==0)
+        {
+
+            QMessageBox::critical(this,tr("Deposit"),tr("No such member found,Check Member ID entered..."));
+            return;
+        }
+    }
+
     Year_Deposits report;
     report.showRecords(memID);
     report.setModal(false);
@@ -778,11 +833,28 @@ void Panel::on_pushButton_TotalSavings_clicked()
 void Panel::on_pushButton_PrevDeposits_clicked()
 {
     QString memID;
-    memID=getMemID();
+    memID=getMemID();//get member ID
     if(memID=="")
     {
         QMessageBox::information(this,tr("Previous Deposits"),tr("No Member ID entered..."));
         return;
+    }
+    //Validate Member
+    QSqlQuery validate;
+    validate.prepare("select * from member_details where memberID='"+memID+"'");
+    if(validate.exec())
+    {
+        int count=0;
+        while(validate.next())
+        {
+            count++;
+        }
+        if(count==0)
+        {
+
+            QMessageBox::critical(this,tr("Deposit"),tr("No such member found,Check Member ID entered..."));
+            return;
+        }
     }
 
      PrevDeposits list;
@@ -796,7 +868,7 @@ QString Panel::getMemID()
 {
     QString memID;
     memID=ui->lineEdit_MemID->text();
-    return memID;
+    return memID;//return member ID
 }
 
 void Panel::on_pushButton_CreateMember_clicked()
@@ -818,6 +890,22 @@ void Panel::on_pushButton_LoanPayment_clicked()
         {
             QMessageBox::critical(this,tr("Loan Payment"),tr("No Member ID entered..."));
             return;
+        }
+        //Validate Member
+        QSqlQuery validate;
+        validate.prepare("select * from member_details where memberID='"+memID+"'");
+        if(validate.exec())
+        {
+            int count=0;
+            while(validate.next())
+            {
+                count++;
+            }
+            if(count==0)
+            {
+                QMessageBox::critical(this,tr("Deposit"),tr("No such member found,Check Member ID entered..."));
+                return;
+            }
         }
         qryloan.prepare("select * from loans where memberID='"+memID+"'");
         if(qryloan.exec())
@@ -844,7 +932,7 @@ QString Panel::getMemIDLoan()
 {
     QString MemID;
     MemID=ui->lineEdit_MemIDLoan->text();
-    return MemID;
+    return MemID;//return member ID
 
 }
 void Panel::on_lineEdit_MemID_editingFinished()
@@ -856,10 +944,11 @@ void Panel::on_lineEdit_MemID_editingFinished()
     {
         while(load.next())
         {
+            if(load.value(0).toString()!="" && load.value(1).toString()!="")
+            {
             ui->label_firstName->setText(load.value(0).toString());
             ui->label_lastName->setText(load.value(1).toString());
-
-
+            }
         }
     }
     else
@@ -879,20 +968,18 @@ void Panel::on_lineEdit_MemIDLoan_editingFinished()
         {
             ui->label_loaneeFirstName->setText(load.value(0).toString());
             ui->label_loaneeLastName->setText(load.value(1).toString());
-
-
+        }
+        if(MemID=="")
+        {
+            ui->label_loaneeFirstName->setText("");
+            ui->label_loaneeLastName->setText("");
         }
     }
     else
     {
         qDebug()<<load.lastError().text();
     }
-    if(MemID=="")
-    {
-        ui->label_loaneeFirstName->setText("");
-        ui->label_loaneeLastName->setText("");
-        qDebug()<<"Davinci!";
-    }
+
 }
 
 void Panel::on_lineEdit_MemIDAcc_textChanged(const QString &arg1)

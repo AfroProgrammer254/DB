@@ -30,5 +30,5 @@ void PrevDeposits::showPrevDeposits(QString id)
 }
 void PrevDeposits::on_commandLinkButton_clicked()
 {
-    this->hide();
+    this->hide();//hides the window
 }

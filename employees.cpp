@@ -17,12 +17,12 @@ Employees::~Employees()
 
 void Employees::on_pushButton_Set_clicked()
 {
-    QString EID,fName,lName,id,pass1,pass2;
+    QString EID,pass1,pass2;
     EID=ui->lineEdit_EID->text();
     pass1=ui->lineEdit_Password->text();
     pass2=ui->lineEdit_Password2->text();
     bool ok;
-    //validation
+    //validation of inputs
     if(EID.length()>0 && pass1.length()>0 && pass2.length()>0)
     {
         ok=true;
@@ -34,6 +34,7 @@ void Employees::on_pushButton_Set_clicked()
     }
     if(ok==true)
     {
+        //validation that all passwords are equal
         if(pass1==pass2)
         {
             ok=true;
@@ -52,6 +53,7 @@ void Employees::on_pushButton_Set_clicked()
         if(insert.exec())
         {
            QMessageBox::information(this,tr("Deenze"),tr("Employee Saved..."));
+           //clear the values on screen
            ui->lineEdit_EID->setText("");
            ui->lineEdit_Password->setText("");
            ui->lineEdit_Password2->setText("");
